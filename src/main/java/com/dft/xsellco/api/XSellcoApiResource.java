@@ -58,10 +58,10 @@ public class XSellcoApiResource extends XSellco {
         if (file != null) {
             Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
             CsvToBean<InventoryReportDataRow> csvToBean = new CsvToBeanBuilder<InventoryReportDataRow>(reader)
-                .withSeparator(',')
-                .withType(InventoryReportDataRow.class)
-                .withIgnoreLeadingWhiteSpace(Boolean.TRUE)
-                .build();
+                    .withSeparator(',')
+                    .withType(InventoryReportDataRow.class)
+                    .withIgnoreLeadingWhiteSpace(Boolean.TRUE)
+                    .build();
             list = csvToBean.parse();
         }
         return list;
@@ -69,7 +69,7 @@ public class XSellcoApiResource extends XSellco {
 
     @SneakyThrows
     public UploadRepricerFileResponse uploadRepricerFile(File file) {
-        URI uri = baseUrl("/repricers");
+        URI uri = baseUrl("repricers");
         HttpRequest request = post(uri, file);
         return getRequestWrapped(request, new JsonBodyHandler<>(UploadRepricerFileResponse.class));
     }

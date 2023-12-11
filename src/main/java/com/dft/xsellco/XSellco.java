@@ -2,6 +2,7 @@ package com.dft.xsellco;
 
 import com.dft.xsellco.constants.XSellcoConstantCodes;
 import lombok.SneakyThrows;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -22,60 +23,60 @@ public class XSellco implements XSellcoConstantCodes {
 
     public XSellco(String userName, String password) {
         client = HttpClient.newBuilder()
-            .authenticator(new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(userName, password.toCharArray());
-                }
-            })
-            .followRedirects(HttpClient.Redirect.ALWAYS)
-            .version(HttpClient.Version.HTTP_1_1)
-            .connectTimeout(Duration.ofSeconds(60))
-            .build();
+                .authenticator(new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(userName, password.toCharArray());
+                    }
+                })
+                .followRedirects(HttpClient.Redirect.ALWAYS)
+                .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofSeconds(60))
+                .build();
     }
 
     @SneakyThrows
     protected URI baseUrl(String path) {
         return new URI(new StringBuilder()
-            .append(API_BASE)
-            .append(FORWARD_SLASH)
-            .append(path)
-            .toString());
+                .append(API_BASE)
+                .append(FORWARD_SLASH)
+                .append(path)
+                .toString());
     }
 
     @SneakyThrows
     protected HttpRequest get(URI uri) {
         return HttpRequest.newBuilder(uri)
-            .header(HTTP_REQUEST_PROPERTY_ACCEPT, HTTP_REQUEST_ACCEPT_TYPE_JSON)
-            .GET().build();
+                .header(HTTP_REQUEST_PROPERTY_ACCEPT, HTTP_REQUEST_ACCEPT_TYPE_JSON)
+                .GET().build();
     }
 
     @SneakyThrows
     protected HttpRequest post(URI uri, final String jsonBody) {
         return HttpRequest.newBuilder(uri)
-            .header(HTTP_REQUEST_PROPERTY_CONTENT_TYPE, HTTP_REQUEST_CONTENT_TYPE_JSON)
-            .header(HTTP_REQUEST_PROPERTY_ACCEPT, HTTP_REQUEST_ACCEPT_TYPE_JSON)
-            .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-            .build();
+                .header(HTTP_REQUEST_PROPERTY_CONTENT_TYPE, HTTP_REQUEST_CONTENT_TYPE_JSON)
+                .header(HTTP_REQUEST_PROPERTY_ACCEPT, HTTP_REQUEST_ACCEPT_TYPE_JSON)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
     }
 
     @SneakyThrows
     protected HttpRequest post(URI uri, final File file) {
         return HttpRequest.newBuilder()
-            .uri(uri)
-            .header(HTTP_REQUEST_PROPERTY_CONTENT_TYPE, HTTP_REQUEST_CONTENT_TYPE_CSV)
-            .header(HTTP_REQUEST_PROPERTY_ACCEPT, HTTP_REQUEST_ACCEPT_TYPE_JSON)
-            .PUT(HttpRequest.BodyPublishers.ofFile(file.toPath()))
-            .build();
+                .uri(uri)
+                .header(HTTP_REQUEST_PROPERTY_CONTENT_TYPE, HTTP_REQUEST_CONTENT_TYPE_CSV)
+                .header(HTTP_REQUEST_PROPERTY_ACCEPT, HTTP_REQUEST_ACCEPT_TYPE_JSON)
+                .POST(HttpRequest.BodyPublishers.ofFile(file.toPath()))
+                .build();
     }
 
     @SneakyThrows
     public <T> T getRequestWrapped(HttpRequest request, HttpResponse.BodyHandler<T> handler) {
         return client
-            .sendAsync(request, handler)
-            .thenComposeAsync(response -> tryResend(client, request, handler, response, 1))
-            .get()
-            .body();
+                .sendAsync(request, handler)
+                .thenComposeAsync(response -> tryResend(client, request, handler, response, 1))
+                .get()
+                .body();
     }
 
     @SneakyThrows
@@ -99,7 +100,7 @@ public class XSellco implements XSellcoConstantCodes {
         if (resp.statusCode() == 429 && count < MAX_ATTEMPTS) {
             Thread.sleep(TIME_OUT_DURATION);
             return client.sendAsync(request, handler)
-                .thenComposeAsync(response -> tryResend(client, request, handler, response, count + 1));
+                    .thenComposeAsync(response -> tryResend(client, request, handler, response, count + 1));
         }
         return CompletableFuture.completedFuture(resp);
     }
